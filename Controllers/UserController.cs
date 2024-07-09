@@ -17,12 +17,14 @@ public class UserController : ControllerBase
     private Authenticator authenticator;
     private readonly IImageUploader imageUploader;
     private readonly ILogger<UserController> logger;
-    public UserController(IConfiguration config, IUserRepository userRepository, IImageUploader imageUploader, ILogger<UserController> logger)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public UserController(IConfiguration config, IUserRepository userRepository, IImageUploader imageUploader, ILogger<UserController> logger, IHttpContextAccessor httpContextAccessor)
     {
         this.userRepository = userRepository;
         this.authenticator = new Authenticator(config, userRepository);
         this.imageUploader = imageUploader;
         this.logger = logger;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     [AllowAnonymous]
@@ -104,7 +106,19 @@ public class UserController : ControllerBase
         string token = HttpContext.Request.Cookies["access_token"];
         if (token is null)
         {
-            return Unauthorized();
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext.Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
+            {
+                var headerValue = authorizationHeader.FirstOrDefault();
+                if (headerValue is not null && headerValue.StartsWith("Bearer", StringComparison.OrdinalIgnoreCase))
+                {
+                    token = headerValue.Split(' ')[1];
+                }
+            }
+            else 
+            {
+                return Unauthorized();
+            }
         }
         var principal = authenticator.GetClaimsFromToken(token);
         

@@ -22,7 +22,6 @@ public class CustomAuthorizationHandler : AuthorizationHandler<HttpOnlyCookieJwt
         }
         else
         {
-            Console.WriteLine("B");
             context.Fail();
         }
         
@@ -30,7 +29,7 @@ public class CustomAuthorizationHandler : AuthorizationHandler<HttpOnlyCookieJwt
 
     }
 
-    private string GetTokenInBearer()
+    public string GetTokenInBearer()
     {
         var httpContext = _httpContextAccessor.HttpContext;
         if (httpContext.Request.Headers.TryGetValue("Authorization", out var authorizationHeader))

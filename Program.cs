@@ -140,7 +140,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 
 app.UseRouting();
 
@@ -153,4 +152,6 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
+// var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+// app.Run($"http://*:{port}");
 app.Run();

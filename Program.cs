@@ -4,20 +4,31 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using CloudinaryDotNet;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 var builder = WebApplication.CreateBuilder(args);
-
-var connectionString = builder.Configuration["Database:ConnectionString"];
-var cloudinaryURL = builder.Configuration["Cloudinary:CloudinaryURL"];
-var jwtKey = builder.Configuration["Authentication:JwtKey"];
+var env = builder.Environment;
+string connectionString = "";
+string cloudinaryURL = "";
+string jwtKey = "";
+string[] allowedOrigins = new string[]{ env.IsDevelopment() ? "http://localhost:5173" : "https://manga-application-frontend.vercel.app"};
+if (env.IsDevelopment()) 
+{
+    connectionString = builder.Configuration["Database:ConnectionString"];
+    cloudinaryURL = builder.Configuration["Cloudinary:CloudinaryURL"];
+    jwtKey = builder.Configuration["Authentication:JwtKey"];
+}
+else 
+{
+    connectionString = Environment.GetEnvironmentVariable("ConnectionString");
+    cloudinaryURL = Environment.GetEnvironmentVariable("CloudinaryURL");
+    jwtKey = Environment.GetEnvironmentVariable("JwtKey");
+}
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -52,7 +63,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("Allow All", builder => 
     {
-        builder.WithOrigins("http://localhost:5173")
+        builder.WithOrigins(allowedOrigins)
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();

@@ -17,14 +17,13 @@ public class UserController : ControllerBase
     private Authenticator authenticator;
     private readonly IImageUploader imageUploader;
     private readonly ILogger<UserController> logger;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    public UserController(IConfiguration config, IUserRepository userRepository, IImageUploader imageUploader, ILogger<UserController> logger, IHttpContextAccessor httpContextAccessor)
+    public UserController(IConfiguration config, IUserRepository userRepository, IImageUploader imageUploader, ILogger<UserController> logger, IWebHostEnvironment env)
     {
         this.userRepository = userRepository;
-        this.authenticator = new Authenticator(config, userRepository);
+        this.authenticator = new Authenticator(config, userRepository, env);
         this.imageUploader = imageUploader;
         this.logger = logger;
-        _httpContextAccessor = httpContextAccessor;
+        // _httpContextAccessor = httpContextAccessor;
     }
 
     [AllowAnonymous]
@@ -42,7 +41,7 @@ public class UserController : ControllerBase
             Secure = true,
             SameSite = SameSiteMode.None
         };
-        this.HttpContext.Response.Cookies.Append("access_token", token, cookieOptions);
+        HttpContext.Response.Cookies.Append("access_token", token, cookieOptions);
         return Ok(new {token});
     }
 
@@ -106,8 +105,8 @@ public class UserController : ControllerBase
         string token = HttpContext.Request.Cookies["access_token"];
         if (token is null)
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext.Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
+            // var httpContext = _httpContextAccessor.HttpContext;
+            if (HttpContext.Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
             {
                 var headerValue = authorizationHeader.FirstOrDefault();
                 if (headerValue is not null && headerValue.StartsWith("Bearer", StringComparison.OrdinalIgnoreCase))

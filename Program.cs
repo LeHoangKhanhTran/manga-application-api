@@ -152,6 +152,6 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
-// var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-// app.Run($"http://*:{port}");
-app.Run();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+app.Run($"http://*:{port}");
+

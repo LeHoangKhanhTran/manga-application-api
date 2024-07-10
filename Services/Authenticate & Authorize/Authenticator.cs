@@ -10,10 +10,12 @@ public class Authenticator
 {
     private readonly IConfiguration config;
     private readonly IUserRepository userRepository;
-    public Authenticator(IConfiguration config, IUserRepository userRepository)
+    IWebHostEnvironment env;
+    public Authenticator(IConfiguration config, IUserRepository userRepository, IWebHostEnvironment env)
     {
         this.config = config;
         this.userRepository = userRepository;
+        this.env = env;
     }
     public async Task<string> Authenticate(string firstCredentials, string password)
     {
@@ -23,7 +25,7 @@ public class Authenticator
         if (!Security.VerifyPassword(password, user.Password))
             throw new Exception("Incorrect password.");
         var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenKey = Encoding.ASCII.GetBytes(config["Authentication:JwtKey"].ToString());
+        var tokenKey = env.IsDevelopment() ? Encoding.ASCII.GetBytes(config["Authentication:JwtKey"].ToString()) : Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JwtKey").ToString());
         string type = Validator.IsValidEmail(firstCredentials) ? ClaimTypes.Email : ClaimTypes.Name;
         var tokenDescriptor = new SecurityTokenDescriptor()
         {
@@ -47,7 +49,7 @@ public class Authenticator
     public ClaimsPrincipal GetClaimsFromToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenKey = Encoding.ASCII.GetBytes(config["Authentication:JwtKey"].ToString());
+        var tokenKey = env.IsDevelopment() ? Encoding.ASCII.GetBytes(config["Authentication:JwtKey"].ToString()) : Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JwtKey").ToString());
         var validationParameters = new TokenValidationParameters 
         {
             ValidateIssuerSigningKey = true,

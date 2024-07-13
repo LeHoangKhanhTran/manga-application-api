@@ -140,8 +140,8 @@ public class UserController : ControllerBase
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.None,
-            Path = "/",
-            Domain = "localhost", 
+            // Path = "/",
+            // Domain = "localhost", 
             Expires = DateTime.UtcNow.AddDays(-1)
         };
         Response.Cookies.Append("access_token", "", cookieOptions);

@@ -67,11 +67,8 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
-               
-            
     });
 });
-
 
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
@@ -154,4 +151,6 @@ app.UseEndpoints(endpoints =>
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 app.Run($"http://*:{port}");
+
+// app.Run();
 

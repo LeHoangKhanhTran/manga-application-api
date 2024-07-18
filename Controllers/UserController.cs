@@ -31,18 +31,24 @@ public class UserController : ControllerBase
     [Route("authenticate")]
     public async Task<ActionResult> Login([FromBody] UserLoginDto userDto)
     {
-        if (userDto.UsernameOrEmail is null || userDto.UsernameOrEmail.Length == 0) throw new Exception("No username nor email was provided.");
-        var token = await authenticator.Authenticate(userDto.UsernameOrEmail, userDto.Password);
-        if (token is null)
-            return Unauthorized();
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.None
-        };
-        HttpContext.Response.Cookies.Append("access_token", token, cookieOptions);
-        return Ok(new {token});
+        try {
+            if (userDto.UsernameOrEmail is null || userDto.UsernameOrEmail.Length == 0) throw new Exception("No username nor email was provided.");
+            var token = await authenticator.Authenticate(userDto.UsernameOrEmail, userDto.Password);
+            if (token is null)
+                return Unauthorized();
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            };
+            HttpContext.Response.Cookies.Append("access_token", token, cookieOptions);
+            return Ok(new {token});
+        }
+        catch(Exception e) {
+            Console.WriteLine(e.Message);
+            return BadRequest(e.Message);
+        }
     }
 
     [AllowAnonymous]

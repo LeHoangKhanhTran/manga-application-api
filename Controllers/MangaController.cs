@@ -59,8 +59,6 @@ namespace MangaApplication.Controllers
                         var uploadResult = await imageUploader.UploadImage(mangaDto.Image, "manga");
                         imageUrl = uploadResult.Url.ToString();
                     }
-
-
                 }
                 catch (Exception e)
                 {
@@ -162,7 +160,6 @@ namespace MangaApplication.Controllers
                 await unitOfWork.mangaRepository.UpdateManga(manga);
                 return NoContent();
             }
-            
             return UnprocessableEntity(ModelState);
         }
 

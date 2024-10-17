@@ -1,8 +1,6 @@
 using MangaApplication.Entities;
 using MongoDB.Driver;
 using MongoDB.Bson;
-using System.Runtime.CompilerServices;
-using MongoDB.Bson.Serialization;
 namespace MangaApplication.Services.Repositories
 {
     public class MangaRepository : IMangaRepository

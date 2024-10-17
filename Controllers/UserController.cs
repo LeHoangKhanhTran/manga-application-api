@@ -46,7 +46,6 @@ public class UserController : ControllerBase
             return Ok(new {token});
         }
         catch(Exception e) {
-            Console.WriteLine(e.Message);
             return BadRequest(e.Message);
         }
     }
